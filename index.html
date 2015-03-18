@@ -4,6 +4,12 @@
     <script src="http://fb.me/react-0.8.0.js"></script>
     <script src="http://fb.me/JSXTransformer-0.8.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+    <style type="text/css">
+        h4{
+            padding-bottom: 0px;
+            margin-bottom: 0px;
+        }
+    </style>
 </head>
 <body>
 <div id="content"></div>
@@ -21,7 +27,7 @@
                         url: this.props.url,
                         dataType: 'json',
                         success: function (data) {      
-                            this.setState({data: data.slice(0,10)});
+                            this.setState({data: data.slice(0,14)});
                         }.bind(this),
                         error: function (xhr, status, err) {
                             console.error("/newss", status, err.toString());
@@ -37,8 +43,9 @@
                         <div className="NewsBox">
                             <h1>Hacker News (using react)</h1>
                             <NewsList data={this.state.data}/>
-                            <div>Auto updates about every: 20000ms</div>
-                            <div><a href='https://github.com/jared-schmidt/jared-schmidt.github.io/tree/master'>GitHub</a></div>
+                            <br />
+                                <div>Auto updates about every: 20000ms</div>
+                                <div><a href='https://github.com/jared-schmidt/jared-schmidt.github.io/tree/master'>GitHub</a></div>
                         </div>
                         );
                 }
@@ -60,14 +67,22 @@
 
             var News = React.createClass({
                 getInitialState: function() {
-                    return {title: "Loading..."}
+                    return {
+                        title: "Loading...",
+                        url: '',
+                        points: 9999
+                    }
                 },
-                componentWillReceiveProps:function(next){
+                componentDidMount: function(){
                     $.ajax({
-                        url: 'https://hacker-news.firebaseio.com/v0/item/'+next.news+'.json',
+                        url: 'https://hacker-news.firebaseio.com/v0/item/'+this.props.news+'.json',
                         dataType: 'json',
                         success: function (data) {      
-                            this.setState({title: data.title, url: data.url});
+                            this.setState({
+                                title: data.title, 
+                                url: data.url,
+                                points: data.score
+                            });
                         }.bind(this),
                         error: function (xhr, status, err) {
                             console.error("/newss", status, err.toString());
@@ -77,8 +92,11 @@
                 render: function() {
                     return (
                             <div>
-                                <h4><a href={this.state.url}>{this.state.title}</a></h4>
+                                <a href={this.state.url}><h4>{this.state.title}</h4></a>
+                                <span>{this.state.points} - points</span>
+                                <hr/>
                             </div>
+                            
                     );
                 }
             });
