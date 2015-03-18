@@ -4,14 +4,9 @@
     <script src="http://fb.me/react-0.8.0.js"></script>
     <script src="http://fb.me/JSXTransformer-0.8.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container">
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3" >
-            <div id="content">
-            </div>
+<div id="content"></div>
             <script type="text/jsx">
             /**
             * @jsx React.DOM
@@ -23,7 +18,7 @@
                 loadCommentsFromServer: function() {
                     console.log("load from server");
                     $.ajax({
-                        url: 'https://hacker-news.firebaseio.com/v0/newstories.json',
+                        url: this.props.url,
                         dataType: 'json',
                         success: function (data) {      
                             this.setState({data: data.slice(0,10)});
@@ -40,8 +35,9 @@
                 render: function() {
                     return (
                         <div className="NewsBox">
-                        <h1>Newss</h1>
-                        <NewsList data={this.state.data}/>
+                            <h1>Hacker News</h1>
+                            <NewsList data={this.state.data}/>
+                            <div>Updates about every: 20000ms</div>
                         </div>
                         );
                 }
@@ -70,7 +66,7 @@
                         url: 'https://hacker-news.firebaseio.com/v0/item/'+next.news+'.json',
                         dataType: 'json',
                         success: function (data) {      
-                            this.setState({title: data.title});
+                            this.setState({title: data.title, url: data.url});
                         }.bind(this),
                         error: function (xhr, status, err) {
                             console.error("/newss", status, err.toString());
@@ -80,7 +76,7 @@
                 render: function() {
                     return (
                             <div>
-                                <h4>{this.state.title}</h4>
+                                <h4><a href={this.state.url}>{this.state.title}</a></h4>
                             </div>
                     );
                 }
@@ -91,8 +87,5 @@
                     document.getElementById('content')
             );
             </script>
-        </div>
-    </div>
-</div>
 </body>
 </html>
