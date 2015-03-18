@@ -126,7 +126,7 @@
                         url: this.props.url,
                         dataType: 'json',
                         success: function (data) {      
-                            this.setState({data: data.slice(0,15)});
+                            this.setState({data: data.slice(0,30)});
                         }.bind(this),
                         error: function (xhr, status, err) {
                             console.error("/newss", status, err.toString());
