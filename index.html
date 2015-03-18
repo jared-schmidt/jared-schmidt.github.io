@@ -5,14 +5,113 @@
     <script src="http://fb.me/JSXTransformer-0.8.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
     <style type="text/css">
-        h4{
-            padding-bottom: 0px;
-            margin-bottom: 0px;
+        body{
+            background: #D3D3D3;
         }
+        
+        .page_title{
+            padding-top: 1em;
+            text-align: center;
+        }
+
+        .footer, .news{
+            padding: 0 1em;
+            margin: 0;
+        }
+
+        .footer{
+            padding-bottom: 1em;
+        }
+
+        .news-num{
+            float: left;
+            text-align: left;
+            padding: 0 1em;
+            width: 2em;
+        }
+
+        .news_title{
+            float: left;
+        }
+
+        .news_points{
+            float: right;
+        }
+
+        .clearFix{
+            clear: both;
+        }
+
+        .left-footer{
+            float: left;
+        }
+
+        .git-link{
+            float: right;
+        }
+
+        .box h3{
+            text-align:center;
+            position:relative;
+            top:80px;
+        }
+        .box {
+            width:70%;
+            height:auto;
+            background:#FFF;
+            margin:40px auto;
+        }
+
+        /*==================================================
+         * Effect 8
+         * ===============================================*/
+        .effect8
+        {
+            position:relative;       
+            -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+               -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+                    box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+        }
+        .effect8:before, .effect8:after
+        {
+            content:"";
+            position:absolute; 
+            z-index:-1;
+            -webkit-box-shadow:0 0 20px rgba(0,0,0,0.8);
+            -moz-box-shadow:0 0 20px rgba(0,0,0,0.8);
+            box-shadow:0 0 20px rgba(0,0,0,0.8);
+            top:10px;
+            bottom:10px;
+            left:0;
+            right:0;
+            -moz-border-radius:100px / 10px;
+            border-radius:100px / 10px;
+        } 
+        .effect8:after
+        {
+            right:10px; 
+            left:auto;
+            -webkit-transform:skew(8deg) rotate(3deg); 
+               -moz-transform:skew(8deg) rotate(3deg);     
+                -ms-transform:skew(8deg) rotate(3deg);     
+                 -o-transform:skew(8deg) rotate(3deg); 
+                    transform:skew(8deg) rotate(3deg);
+        }
+
+
+        /*==================================================
+         * Effect 1
+         * ===============================================*/
+        .effect1{
+            -webkit-box-shadow: 0 10px 6px -6px #777;
+               -moz-box-shadow: 0 10px 6px -6px #777;
+                    box-shadow: 0 10px 6px -6px #777;
+        }
+
     </style>
 </head>
 <body>
-<div id="content"></div>
+<div id="content" class='box effect8'></div>
             <script type="text/jsx">
             /**
             * @jsx React.DOM
@@ -27,7 +126,7 @@
                         url: this.props.url,
                         dataType: 'json',
                         success: function (data) {      
-                            this.setState({data: data.slice(0,14)});
+                            this.setState({data: data.slice(0,15)});
                         }.bind(this),
                         error: function (xhr, status, err) {
                             console.error("/newss", status, err.toString());
@@ -41,11 +140,14 @@
                 render: function() {
                     return (
                         <div className="NewsBox">
-                            <h1>Hacker News (using react)</h1>
+                            <h1 className="page_title">Hacker News (using react)</h1>
                             <NewsList data={this.state.data}/>
                             <br />
-                                <div>Auto updates about every: 20000ms</div>
-                                <div><a href='https://github.com/jared-schmidt/jared-schmidt.github.io/tree/master'>GitHub</a></div>
+                            <div className='footer'>
+                                <span className='left-footer'>Auto updates about every: 20000ms</span>
+                                <span className='git-link'><a href='https://github.com/jared-schmidt/jared-schmidt.github.io/tree/master'>GitHub</a></span>
+                                <div className='clearFix'></div>
+                            </div>
                         </div>
                         );
                 }
@@ -53,8 +155,8 @@
 
             var NewsList = React.createClass({
                 render: function() {
-                    var newss = this.props.data.map( function(news) {
-                        return <News news={news}></News>;
+                    var newss = this.props.data.map( function(news, i) {
+                        return <div><span className='news-num'>{i+1}.</span><News news={news}></News></div>;
                     });
 
                     return (
@@ -91,12 +193,12 @@
                 },
                 render: function() {
                     return (
-                            <div>
-                                <a href={this.state.url}><h4>{this.state.title}</h4></a>
-                                <span>{this.state.points} - points</span>
+                            <div className='news'>
+                                <span className='news_title'><a href={this.state.url}>{this.state.title}</a></span>
+                                <span className='news_points'>{this.state.points} points</span>
+                                <div className='clearFix'></div>
                                 <hr/>
                             </div>
-                            
                     );
                 }
             });
