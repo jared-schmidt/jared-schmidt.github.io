@@ -19,43 +19,142 @@
                     $scope.hn_ids = info;
                 });
             });
-
-
-            hnApp.directive("hnlist", function() {
-              return {
-                restrict: "E",
-                controller: function($scope, $http){
-                    $http.get('https://hacker-news.firebaseio.com/v0/topstories.json').success(function(data){
-                        console.log("here");
-                        $scope.ids = data;
-                    })
-                },
-                template: '<div ng-repeat="id in ids"><hnnews id="id"></hnnews></div>'
-              }
-            })
-
-            hnApp.directive("hnnews", function() {
-                return {
-                    restrict: "E",
-                    scope: {
-                        id: '='
-                    },
-                    controller: function($scope, $http){
-                        var id = $scope.id;
-                        $http.get('https://hacker-news.firebaseio.com/v0/item/'+id+'.json').success(function(data){
-                            $scope.news = data;
-                        })
-                    },
-                    templateUrl: 'news_template.html'
-                }
-            });
-
-
-
         </script>
+
+        <style type="text/css">
+            body{
+                background: #D3D3D3;
+            }
+
+            .page_title{
+                padding-top: 1em;
+                text-align: center;
+            }
+
+            .footer, .news{
+                padding: 0 1em;
+                margin: 0;
+            }
+
+            .footer{
+                padding-bottom: 1em;
+            }
+
+            .news-num{
+                float: left;
+                text-align: left;
+                padding: 0 1em;
+                /*width: 2em;*/
+            }
+
+            .news_title{
+                float: left;
+            }
+
+            .news_points{
+                float: right;
+            }
+
+            .clearFix{
+                clear: both;
+            }
+
+            .left-footer{
+                float: left;
+            }
+
+            .git-link{
+                float: right;
+            }
+
+            .box h3{
+                text-align:center;
+                position:relative;
+                top:80px;
+            }
+            .box {
+                width:70%;
+                height:auto;
+                background:#FFF;
+                margin:40px auto;
+            }
+
+            /*==================================================
+             * Effect 8
+             * ===============================================*/
+            .effect8
+            {
+                position:relative;
+                -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+                   -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+                        box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+            }
+            .effect8:before, .effect8:after
+            {
+                content:"";
+                position:absolute;
+                z-index:-1;
+                -webkit-box-shadow:0 0 20px rgba(0,0,0,0.8);
+                -moz-box-shadow:0 0 20px rgba(0,0,0,0.8);
+                box-shadow:0 0 20px rgba(0,0,0,0.8);
+                top:10px;
+                bottom:10px;
+                left:0;
+                right:0;
+                -moz-border-radius:100px / 10px;
+                border-radius:100px / 10px;
+            }
+            .effect8:after
+            {
+                right:10px;
+                left:auto;
+                /*-webkit-transform:skew(8deg) rotate(3deg);*/
+                   /*-moz-transform:skew(8deg) rotate(3deg);*/
+                    /*-ms-transform:skew(8deg) rotate(3deg);*/
+                     /*-o-transform:skew(8deg) rotate(3deg);*/
+                        /*transform:skew(8deg) rotate(3deg);*/
+            }
+
+
+            /*==================================================
+             * Effect 1
+             * ===============================================*/
+            .effect1{
+                -webkit-box-shadow: 0 10px 6px -6px #777;
+                   -moz-box-shadow: 0 10px 6px -6px #777;
+                        box-shadow: 0 10px 6px -6px #777;
+            }
+
+        </style>
 
     </head>
     <body ng-controller='hnCtrl'>
-        <hnlist></hnlist>
+        <div  class='box effect8'>
+            <!-- <span>{{$index+1}}</span> -->
+            <!-- <span>{{news.title}}</span> -->
+            <!-- <span>{{news.score}}</span> -->
+
+            <div class="NewsBox">
+                <h1 class="page_title">Hacker News (using angular)</h1>
+                <div class="NewsList">
+                <div>
+                            <div class='news' ng-repeat="news in hn_ids track by $index">
+                                <span class='news-num'>{{$index+1}}.</span>
+                                <span class='news_title'><a href="{{news.url}}">{{news.title}}</a></span>
+                                <span class='news_points'>{{news.score}} points</span>
+                                <div class='clearFix'></div>
+                                <hr/>
+                            </div>
+                        </div>
+                        </div>
+                <br />
+                <div class='footer'>
+                    <span class='left-footer'>Auto updates about every: 20000ms</span>
+                    <span class='git-link'><a href='https://github.com/jared-schmidt/jared-schmidt.github.io/tree/master'>GitHub</a></span>
+                    <div class='clearFix'></div>
+                </div>
+            </div>
+        </div>
+
     </body>
 </html>
