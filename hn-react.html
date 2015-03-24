@@ -116,8 +116,11 @@
             /**
             * @jsx React.DOM
             */
+
             var NewsBox = React.createClass({
                 getInitialState: function() {
+                    console.log("here");
+                    startTime = new Date();
                     return {data: []}
                 },
                 loadCommentsFromServer: function() {
