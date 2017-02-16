@@ -1,7 +1,39 @@
 <html>
-    <body>
-        <iframe height="400" width='900' src="hn-angular.html"></iframe>
-        <iframe height="400" width='900' src="angular-with-directive.html"></iframe>
-        <iframe height="400" width='900' src="hn-react.html"></iframe>
-    </body>
+	<head>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+	</head>
+	<body>
+		<ul style="columns: 15; list-style-type: none;" id="foo"></ul>
+
+
+		<script type="text/javascript">
+
+			for(var i=0;i<540;i++) {
+				$('#foo').append('<li class="driver_name">' + faker.name.lastName() + '</li>');
+			}
+
+
+			var stringToColour = function(str) {
+			  var hash = 0;
+			  for (var i = 0; i < str.length; i++) {
+			    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+			  }
+			  var colour = '#';
+			  for (var i = 0; i < 3; i++) {
+			    var value = (hash >> (i * 8)) & 0xFF;
+			    colour += ('00' + value.toString(16)).substr(-2);
+			  }
+			  return colour;
+			}
+
+			var elements = document.getElementsByClassName("driver_name");
+			for(var i=0; i<elements.length;i++) {
+				var element = elements[i];
+				var name = element.innerHTML;
+				var user_id = element.getAttribute('data-id');
+				element.style.color = stringToColour(i + name + i);
+			}
+		</script>
+	</body>
 </html>
