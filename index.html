@@ -1,39 +1,233 @@
 <html>
-	<head>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
-	</head>
-	<body>
-		<ul style="columns: 15; list-style-type: none;" id="foo"></ul>
+
+    <body>
+        <button id="animate">animate</button>
+        <select id="easing">
+            <option>easeInQuad</option>
+            <option>easeOutQuad</option>
+            <option>easeInOutQuad</option>
+            <option>easeInCubic</option>
+            <option>easeOutCubic</option>
+            <option>easeInOutCubic</option>
+            <option>easeInQuart</option>
+            <option>easeOutQuart</option>
+            <option>easeInOutQuart</option>
+            <option>easeInQuint</option>
+            <option>easeOutQuint</option>
+            <option>easeInOutQuint</option>
+            <option>easeInSine</option>
+            <option>easeOutSine</option>
+            <option>easeInOutSine</option>
+            <option>easeInExpo</option>
+            <option>easeOutExpo</option>
+            <option>easeInOutExpo</option>
+            <option>easeInCirc</option>
+            <option>easeOutCirc</option>
+            <option>easeInOutCirc</option>
+            <option>easeInElastic</option>
+            <option>easeOutElastic</option>
+            <option>easeInOutElastic</option>
+            <option>easeInBack</option>
+            <option>easeOutBack</option>
+            <option>easeInOutBack</option>
+            <option>easeInBounce</option>
+            <option>easeOutBounce</option>
+            <option>easeInOutBounce</option>
+        </select>
+        <input id="speed" value="3000" />
+        <canvas style="border: 1px black solid" width="500" height="500" id="c"></canvas>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.17/fabric.min.js"></script>
+        <script>
+        function createRect(x, y) {
+            var rect = new fabric.Rect({
+                width: 50,
+                height: 50,
+                left: x,
+                top: y,
+                stroke: '#aaf',
+                strokeWidth: 5,
+                fill: '#faa',
+                selectable: false,
+                hasBorders: false,
+                evented: true
+            });
 
 
-		<script type="text/javascript">
 
-			for(var i=0;i<540;i++) {
-				$('#foo').append('<li class="driver_name">' + faker.name.lastName() + '</li>');
-			}
+            return rect;
+        }
+
+        function createCircle(x, y, radius) {
+            radius = radius || 10;
+            var circle = new fabric.Circle({
+                top: parseInt(y),
+                left: parseInt(x),
+                radius: parseInt(radius),
+                lockRotation: true,
+                lockUniScaling: true,
+                hasRotatingPoint: false,
+                selectable: false,
+                hasBorders: false,
+                evented: false,
+                
+                // Commented out because of IE8
+                // perPixelTargetFind: true,
+                // targetFindTolerance: 4,
+                originX: 'center',
+                originY: 'center'
+            });
+            return circle;
+        }
+
+        var circle;
+        var REACT_HEIGHT = 50;
+        var REACT_WIDTH = 50;
 
 
-			var stringToColour = function(str) {
-			  var hash = 0;
-			  for (var i = 0; i < str.length; i++) {
-			    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-			  }
-			  var colour = '#';
-			  for (var i = 0; i < 3; i++) {
-			    var value = (hash >> (i * 8)) & 0xFF;
-			    colour += ('00' + value.toString(16)).substr(-2);
-			  }
-			  return colour;
-			}
+        function createGrid(canvas) {
 
-			var elements = document.getElementsByClassName("driver_name");
-			for(var i=0; i<elements.length;i++) {
-				var element = elements[i];
-				var name = element.innerHTML;
-				var user_id = element.getAttribute('data-id');
-				element.style.color = stringToColour(i + name + i);
-			}
-		</script>
-	</body>
+            var itemWidth = REACT_WIDTH;
+            var itemHeight = REACT_HEIGHT;
+
+            // 36 total (from game 2)
+            for (var x = 0; x < 6; x++) {
+                for (var y = 0; y < 6; y++) {
+                    canvas.add(createRect(x * itemWidth, y * itemHeight));
+                }
+            }
+        }
+
+
+        function RectCircleColliding(circle, rect) {
+            var distX = Math.abs(circle.x - rect.x - rect.w / 2);
+            var distY = Math.abs(circle.y - rect.y - rect.h / 2);
+
+            if (distX > (rect.w / 2 + circle.r)) {
+                return false;
+            }
+            if (distY > (rect.h / 2 + circle.r)) {
+                return false;
+            }
+
+            if (distX <= (rect.w / 2)) {
+                return true;
+            }
+            if (distY <= (rect.h / 2)) {
+                return true;
+            }
+
+            var dx = distX - rect.w / 2;
+            var dy = distY - rect.h / 2;
+            return (dx * dx + dy * dy <= (circle.r * circle.r));
+        }
+
+        function cellCenter(rectWidth, index) {
+            var offset = 28;
+            return rectWidth * index - offset;
+        }
+
+        function animate(canvas, circle, direction, max, onComplete) {
+            var speed = parseInt(document.getElementById('speed').value);
+            circle.animate(direction, max, {
+                duration: speed,
+                onChange: function() {
+                    canvas.forEachObject(function(obj) {
+                        var c = {
+                            x: circle.left,
+                            y: circle.top,
+                            r: circle.radius
+                        }
+                        var r = {
+                            x: obj.left,
+                            y: obj.top,
+                            w: obj.width,
+                            h: obj.height
+                        }
+                        // NOTE: intersectsWithObject would not work
+                  //      obj.set('opacity', RectCircleColliding(c, r) ? 0.5 : 1);
+                    })
+                    canvas.renderAll();
+                },
+                onComplete: onComplete,
+                easing: fabric.util.ease[document.getElementById('easing').value]
+            });
+        }
+
+        var canvas = this.__canvas = new fabric.Canvas('c');
+
+        
+        createGrid(canvas);
+
+        function click(options) {
+            var target = options.target;
+
+            if (circle) {
+
+                var c = {
+                    x: circle.left,
+                    y: circle.top,
+                    r: circle.radius
+                }
+                var r = {
+                    x: target.left,
+                    y: target.top,
+                    w: target.width,
+                    h: target.height
+                }
+
+                console.log(RectCircleColliding(c, r));
+
+                if (RectCircleColliding(c, r)) {
+                    target.setFill('#9C27B0');
+                }
+            }
+
+        }
+
+        canvas.on({
+            'mouse:down' : click
+        });
+
+        function reset() {
+            canvas.remove(circle)
+            circle = createCircle(cellCenter(REACT_WIDTH, 6), cellCenter(REACT_HEIGHT, 6));
+            canvas.add(circle)
+        }
+
+
+        var animateBtn = document.getElementById('animate');
+        animateBtn.onclick = function() {
+            reset();
+
+            animateBtn.disabled = true;
+            var FAR_LEFT = 1;
+            var FAR_RIGHT = 6;
+            animate(canvas, circle, 'left', cellCenter(REACT_WIDTH, FAR_LEFT), function() { // Left
+                animate(canvas, circle, 'top', cellCenter(REACT_HEIGHT, 5), function() { // Up
+                    animate(canvas, circle, 'left', cellCenter(REACT_WIDTH, FAR_RIGHT), function() { // Right
+                        animate(canvas, circle, 'top', cellCenter(REACT_HEIGHT, 4), function() { // Up
+                            animate(canvas, circle, 'left', cellCenter(REACT_WIDTH, FAR_LEFT), function() { // Left
+                                animate(canvas, circle, 'top', cellCenter(REACT_HEIGHT, 3), function() { // Up
+                                    animate(canvas, circle, 'left', cellCenter(REACT_WIDTH, FAR_RIGHT), function() { // Right
+                                        animate(canvas, circle, 'top', cellCenter(REACT_HEIGHT, 2), function() { // Up
+                                            animate(canvas, circle, 'left', cellCenter(REACT_WIDTH, FAR_LEFT), function() { // Left
+                                                animate(canvas, circle, 'top', cellCenter(REACT_HEIGHT, 1), function() { // Up
+                                                    animate(canvas, circle, 'left', cellCenter(REACT_WIDTH, FAR_RIGHT), function() { // right
+                                                        animateBtn.disabled = false;
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        };
+
+        </script>
+    </body>
+
 </html>
