@@ -79,10 +79,6 @@
                 selectable: false,
                 hasBorders: false,
                 evented: false,
-                
-                // Commented out because of IE8
-                // perPixelTargetFind: true,
-                // targetFindTolerance: 4,
                 originX: 'center',
                 originY: 'center'
             });
@@ -132,7 +128,7 @@
         }
 
         function cellCenter(rectWidth, index) {
-            var offset = 28;
+            var offset = 22;
             return rectWidth * index - offset;
         }
 
@@ -140,32 +136,16 @@
             var speed = parseInt(document.getElementById('speed').value);
             circle.animate(direction, max, {
                 duration: speed,
-                onChange: function() {
-                    canvas.forEachObject(function(obj) {
-                        var c = {
-                            x: circle.left,
-                            y: circle.top,
-                            r: circle.radius
-                        }
-                        var r = {
-                            x: obj.left,
-                            y: obj.top,
-                            w: obj.width,
-                            h: obj.height
-                        }
-                        // NOTE: intersectsWithObject would not work
-                  //      obj.set('opacity', RectCircleColliding(c, r) ? 0.5 : 1);
-                    })
-                    canvas.renderAll();
-                },
+                onChange: canvas.renderAll.bind(canvas),
                 onComplete: onComplete,
                 easing: fabric.util.ease[document.getElementById('easing').value]
             });
         }
 
         var canvas = this.__canvas = new fabric.Canvas('c');
+        canvas.selection = false;
+        canvas.hoverCursor = 'normal';        
 
-        
         createGrid(canvas);
 
         function click(options) {
@@ -185,8 +165,6 @@
                     h: target.height
                 }
 
-                console.log(RectCircleColliding(c, r));
-
                 if (RectCircleColliding(c, r)) {
                     target.setFill('#9C27B0');
                 }
@@ -195,7 +173,32 @@
         }
 
         canvas.on({
-            'mouse:down' : click
+            'mouse:down' : click,
+            'mouse:over' : function(event) {
+                var target = event.target;
+                
+                if (circle) {
+    
+                    var c = {
+                        x: circle.left,
+                        y: circle.top,
+                        r: circle.radius
+                    }
+                    var r = {
+                        x: target.left,
+                        y: target.top,
+                        w: target.width,
+                        h: target.height
+                    }
+    
+                    if (RectCircleColliding(c, r)) {
+                        event.target.hoverCursor = 'crosshair';
+                    } else {
+                        event.target.hoverCursor = 'default';
+                    }
+                }
+                
+            }
         });
 
         function reset() {
