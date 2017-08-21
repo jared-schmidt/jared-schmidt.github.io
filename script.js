@@ -18,7 +18,7 @@ var GAME2 = [
     {text: 'solution', isCorrect: true},
     {text: 'protected', isCorrect: false},
     {text: 'home', isCorrect: true},
-    {text: 'Philade;phia', isCorrect: true},
+    {text: 'Philadelphia', isCorrect: true},
     {text: 'harming', isCorrect: true},
     {text: 'destruction', isCorrect: true},
     {text: 'two', isCorrect: true},
@@ -42,17 +42,14 @@ function createRect(itemWidth, itemHeight, x, y, textObject) {
     var rect = new fabric.Rect({
         width: itemWidth,
         height: itemHeight,
-        // left: x,
-        // top: y,
-        stroke: '#aaf',
-        strokeWidth: 5,
-        fill: '#faa',
+        stroke: '#BDBDBD',
+        strokeWidth: 2,
+        fill: '#424242',
         selectable: false,
         hasBorders: false,
         evented: true,
         originX: 'center',
         originY: 'center',
-        
     });
 
     var text = new fabric.Text(textObject.text, {
@@ -60,7 +57,10 @@ function createRect(itemWidth, itemHeight, x, y, textObject) {
         originX: 'center',
         scaleY: 0.5,
         scaleX: 0.5,
-        originY: 'center'
+        originY: 'center',
+        fill: '#FAFAFA',
+        strokeWidth: 10,
+        fontWeight: 'bold'
     });
 
     var group = new fabric.Group([rect, text], {
@@ -83,6 +83,7 @@ function createCircle(x, y, radius) {
         lockUniScaling: true,
         hasRotatingPoint: false,
         selectable: false,
+        fill: '#FF5722',
         hasBorders: false,
         evented: false,
         originX: 'center',
@@ -142,7 +143,8 @@ function cellCenter(rectWidth, index) {
 }
 
 function animate(canvas, circle, direction, max, onComplete) {
-    var speed = parseInt(document.getElementById('speed').value);
+    // var speed = parseInt(document.getElementById('speed').value);
+    var speed = 3000;
     circle.animate(direction, max, {
         duration: (direction == 'top' ? speed / 2 : speed),
         onChange: canvas.renderAll.bind(canvas),
@@ -159,9 +161,7 @@ createGrid(canvas);
 
 function click(options) {
     var target = options.target;
-
-    alert("Is Correct? -> " + target.isCorrect);
-
+    
     if (circle) {
 
         var c = {
@@ -177,10 +177,14 @@ function click(options) {
         }
 
         if (RectCircleColliding(c, r)) {
-            target.setFill('#9C27B0');
+            var rect = target._objects[0];
+            if (target.isCorrect) {
+                rect.setFill('#4CAF50'); // Green
+            } else {
+                rect.setFill('#F44336'); // Red
+            }
         }
     }
-
 }
 
 canvas.on({
